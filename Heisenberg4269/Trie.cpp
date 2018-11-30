@@ -1,6 +1,6 @@
 class Trie
 {
-public:
+private:
     struct tnode
     {
         vector <tnode*> child;
@@ -8,6 +8,8 @@ public:
     };
     tnode *root;
     int vocabLength;
+
+public:
 
     Trie(int vocab = 26)
     {
@@ -19,7 +21,7 @@ public:
     {
         tnode *newTnode = new tnode;
         newTnode->child.resize(vocabLength);
-        for(int i = 0; i<vocabLength; i++)
+        for(int i = 0; i < vocabLength; i++)
         {
             newTnode->child[i] = NULL;
         }
@@ -27,33 +29,33 @@ public:
         return newTnode;
     }
 
-    void insert(string str)
+    void insert(string &str)
     {
-        tnode *temp = root;
-        for(int i = 0; i<str.size(); i++)
+        tnode *current = root;
+        for(int i = 0; i < str.size(); i++)
         {
             int key = str[i] - 'a';
-            if(temp->child[key] == NULL)
+            if(!current->child[key])
             {
-                temp->child[key] = makeTnode();
+                current->child[key] = makeTnode();
             }
-            temp = temp->child[key];
+            current = current->child[key];
         }
-        temp->isword = true;
+        current->isword = current;
     }
 
-    bool search(string str)
+    bool search(string &str)
     {
-        tnode *temp = root;
-        for(int i = 0; i<str.size(); i++)
+        tnode *current = root;
+        for(int i = 0; i < str.size(); i++)
         {
             int key = str[i] - 'a';
-            if(temp->child[key] == NULL)
+            if(!current->child[key])
             {
                 return false;
             }
-            temp = temp->child[key];
+            current = current->child[key];
         }
-        return temp->isword;
+        return current->isword;
     }
 };
