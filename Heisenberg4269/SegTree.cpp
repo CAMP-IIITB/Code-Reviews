@@ -5,7 +5,7 @@ private:
     int sizeOfArray;
 
 public:
-    SegTree(vector <int> &arr)
+    SegTree(const vector <int> &arr)
     {
         sizeOfArray = arr.size();
         segTree.resize(2*sizeOfArray);
