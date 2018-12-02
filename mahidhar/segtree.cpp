@@ -1,9 +1,10 @@
-//This is a generic implementation of the segment tree without lazy propagation
-//This solves range sum query with updates
-//For other problems the implementation of the util class should be changed accordingly.
+// This is a generic implementation of the segment tree without lazy propagation
+// This solves range sum query with updates
+// For other problems the implementation of the util class should be changed accordingly.
 
 #include <iostream>
 
+// struct for the segment tree node
 struct sTreeNode{
 	int x;
 };
@@ -12,36 +13,46 @@ typedef struct sTreeNode snode;
 
 class util{
 public:
-	//This is the return value if the range is out of bounds
+	// This is the return value if the range is out of bounds
 	snode outValue;
 
 	util(){
 		outValue.x = 0;
 	}
-	snode getLeaf(int a){
+
+    // function to return the value of leaf during build
+	snode getLeaf(int a)
+    {
 		snode ans;
 		ans.x = a;
 		return ans;
 	}
-	snode combine(const snode &a,const snode &b){
+
+    // function to combine two segment tree nodes
+	snode combine(const snode &a, const snode &b)
+    {
 		snode ans;
-		ans.x = a.x+b.x;
+		ans.x = a.x + b.x;
 		return ans;
 	}
-	snode getVal(const snode &a){
+
+    // function to return during query if the segment falls in the range
+	snode getVal(const snode &a)
+    {
 		snode ans;
 		ans.x = a.x;
 		return ans;
 	}
 };
 
-//IMPORTANT:: Assumes array is 1 indexed.
+// IMPORTANT:: Assumes array is 1 indexed.
 class segtree{
 public:
-	int SIZE;
+	const int SIZE;
 	snode *seg;
 	util u;
-	//constructor
+
+	// constructor
 	segtree(int size):
 	SIZE(size)
 	{
@@ -50,56 +61,58 @@ public:
 			seg[i].x = 0;
 	}
 
-	//function to build the tree
-	void build(int arr[],  int L , int R , int node = 1)
+	// function to build the tree. Lrange and Rrange give us the segment the current node covers
+	void build(int arr[],  int Lrange , int Rrange , int node_index = 1)
 	{
-		if(L==R)
+		if(Lrange == Rrange)
 		{
-			seg[node]=u.getLeaf(arr[L]);
+			seg[node_index] = u.getLeaf(arr[Lrange]);
 			return;
 		}
-		int M=(L+R)/2;
-		build(arr, L, M, node*2);
-		build(arr, M+1, R, node*2+1);
-		seg[node]=u.combine(seg[node*2], seg[node*2+1]);
+		int M = (Lrange+Rrange)/2;
+		build(arr, Lrange, M, node_index*2);
+		build(arr, M+1, Rrange, node_index*2+1);
+		seg[node_index] = u.combine(seg[node_index*2], seg[node_index*2+1]);
 	}
 
-	//function to query the tree
-	snode query(int i, int j, int L , int R , int node = 1)
+	// function to query the tree. Lrange and Rrange give us the segment the current node covers
+	snode query(int i, int j, int Lrange , int Rrange , int node_index = 1)
 	{
-		if(j<L || i>R)
+		if(j<Lrange || i>Rrange)
 			return u.outValue;
-		if(i<=L && R<=j)
-			return u.getVal(seg[node]);
-		int M=(L+R)/2;
-		snode left=query(i, j, L, M, node*2);
-		snode right=query(i, j, M+1, R, node*2 + 1);
+		if(i<=Lrange && Rrange<=j)
+			return u.getVal(seg[node_index]);
+		int M = (Lrange+Rrange)/2;
+		snode left  = query(i, j, Lrange, M, node_index*2);
+		snode right = query(i, j, M+1, Rrange, node_index*2 + 1);
 		return u.combine(left, right);
 	}
 
-	//function to update the segment tree
-	void update(int pos, int val, int L , int R , int node = 1)
+	// function to update the segment tree. Lrange and Rrange give us the segment the current node covers
+	void update(int pos, int val, int Lrange , int Rrange , int node_index = 1)
 	{
-		if(L==R)
+		if(Lrange == Rrange)
 		{
-			seg[node]=u.getLeaf(val);
+			seg[node_index] = u.getLeaf(val);
 			return;
 		}
-		int M=(L+R)/2;
-		if(pos<=M)
-			update(pos, val, L, M, node*2);
+		int M = (Lrange+Rrange)/2;
+		if(pos <= M)
+			update(pos, val, Lrange, M, node_index*2);
 		else
-			update(pos, val, M+1, R, node*2 + 1);
-		seg[node]=u.combine(seg[node*2], seg[node*2 + 1]);
+			update(pos, val, M+1, Rrange, node_index*2 + 1);
+		seg[node_index] = u.combine(seg[node_index*2], seg[node_index*2 + 1]);
 	}
 
-	//getter to get size
-	int getSize () const{
+	// getter to get size
+	int getSize () const
+    {
 		return SIZE;
 	}
 
-	//destructor
-	~segtree(){
+	// destructor
+	~segtree()
+    {
 		delete [] seg;
 	}
 
