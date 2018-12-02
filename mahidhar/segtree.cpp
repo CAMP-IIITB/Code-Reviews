@@ -3,7 +3,7 @@
 // For other problems the implementation of the util class should be changed accordingly.
 
 #include <iostream>
-
+#include <vector>
 // struct for the segment tree node
 struct sTreeNode{
 	int x;
@@ -21,24 +21,21 @@ public:
 	}
 
     // function to return the value of leaf during build
-	snode getLeaf(int a)
-    {
+	snode getLeaf(int arrayval){
 		snode ans;
-		ans.x = a;
+		ans.x = arrayval;
 		return ans;
 	}
 
     // function to combine two segment tree nodes
-	snode combine(const snode &a, const snode &b)
-    {
+	snode combine(const snode &left, const snode &right){
 		snode ans;
-		ans.x = a.x + b.x;
+		ans.x = left.x + right.x;
 		return ans;
 	}
 
     // function to return during query if the segment falls in the range
-	snode getVal(const snode &a)
-    {
+	snode getVal(const snode &a){
 		snode ans;
 		ans.x = a.x;
 		return ans;
@@ -47,25 +44,21 @@ public:
 
 // IMPORTANT:: Assumes array is 1 indexed.
 class segtree{
-public:
+private:
 	const int SIZE;
-	snode *seg;
+	std::vector<snode> seg;
 	util u;
-
+public:
+	
 	// constructor
 	segtree(int size):
-	SIZE(size)
-	{
-		seg = new snode[4*size+1];
-		for(int i = 0 ; i <= 4*size ; i++)
-			seg[i].x = 0;
+	SIZE(size){
+		seg.resize(4*SIZE+1);
 	}
 
 	// function to build the tree. Lrange and Rrange give us the segment the current node covers
-	void build(int arr[],  int Lrange , int Rrange , int node_index = 1)
-	{
-		if(Lrange == Rrange)
-		{
+	void build(const std::vector<int> &arr,  int Lrange , int Rrange , int node_index = 1){
+		if(Lrange == Rrange){
 			seg[node_index] = u.getLeaf(arr[Lrange]);
 			return;
 		}
@@ -76,8 +69,7 @@ public:
 	}
 
 	// function to query the tree. Lrange and Rrange give us the segment the current node covers
-	snode query(int i, int j, int Lrange , int Rrange , int node_index = 1)
-	{
+	snode query(int i, int j, int Lrange , int Rrange , int node_index = 1){
 		if(j<Lrange || i>Rrange)
 			return u.outValue;
 		if(i<=Lrange && Rrange<=j)
@@ -89,10 +81,8 @@ public:
 	}
 
 	// function to update the segment tree. Lrange and Rrange give us the segment the current node covers
-	void update(int pos, int val, int Lrange , int Rrange , int node_index = 1)
-	{
-		if(Lrange == Rrange)
-		{
+	void update(int pos, int val, int Lrange , int Rrange , int node_index = 1){
+		if(Lrange == Rrange){
 			seg[node_index] = u.getLeaf(val);
 			return;
 		}
@@ -105,15 +95,8 @@ public:
 	}
 
 	// getter to get size
-	int getSize () const
-    {
+	int getSize () const{
 		return SIZE;
-	}
-
-	// destructor
-	~segtree()
-    {
-		delete [] seg;
 	}
 
 };
